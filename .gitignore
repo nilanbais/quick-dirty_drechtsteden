@@ -1,3 +1,7 @@
 venv/
 .env
-input/
+input/*
+rapportage_dataset/*
+# do not ignore the following files
+!input/.gitkeep
+!rapportage_dataset/.gitkeep
