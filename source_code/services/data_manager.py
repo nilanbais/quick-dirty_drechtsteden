@@ -60,7 +60,7 @@ class DataManagerContext:
     def preperation_strategy(self, new_strategy: AbstractPreperationStrategy) -> None:
         self._data_collect_strategy = new_strategy
 
-    def manage_data(self) -> DataFrame:
+    def get_data(self) -> DataFrame:
          input_data: DataFrame = self.collection_strategy.collect_data()
 
 

@@ -6,9 +6,23 @@ stappen die doorlopen worden:
 2. aggregeren van de data over een periode van 1 dag (elke dag is 1 record).
 3. toevoegen van de nieuwe records aan de output (dashboard dataset).
 """
-from source_code.services.input_readers import weekly_dataset_reader
+from pandas import DataFrame
+
+from source_code.services.input_manager import InputManager
+
 
 class TransformationEngine:
 
-    def run_transformations() -> None:
-        print("Lege functie => Fictief uitvoeren van transformatie.")
+    def __init__(self):
+        pass
+
+    def run_transformations(self) -> None:
+        self.tranformation_input = self.get_transformation_input()
+        # Uitvoeren van de transformaties/aggregaties
+        # daarna: geaggregeerde data wegschrijven
+
+    @staticmethod
+    def get_transformation_input() -> DataFrame:
+        input_manager = InputManager()
+        transformation_input: DataFrame = input_manager.get_input_data()
+        return transformation_input
