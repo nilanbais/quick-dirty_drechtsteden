@@ -6,6 +6,7 @@ stappen die doorlopen worden:
 2. aggregeren van de data over een periode van 1 dag (elke dag is 1 record).
 3. toevoegen van de nieuwe records aan de output (dashboard dataset).
 """
+from source_code.services.input_readers import weekly_dataset_reader
 
 class TransformationEngine:
 
