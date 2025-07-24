@@ -13,3 +13,6 @@ HANDLED_INPUT_FILENAME: str = os.getenv("HANDLED_INPUT_FILENAME")
 
 def test_read_json():
     assert read_json(file_path=os.path.join(REFERENCE_FOLDER_PATH, HANDLED_INPUT_FILENAME)) != None
+
+
+# TODO; add test for writing to json
