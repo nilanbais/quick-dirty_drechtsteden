@@ -6,9 +6,9 @@ import os
 
 import pandas as pd
 
-from source_code.services.input_readers import dataset_reader
-
 from pandas import DataFrame
+
+from source_code.utils.file_readers_writers import dataset_reader
 
 from dotenv import load_dotenv
 load_dotenv()
