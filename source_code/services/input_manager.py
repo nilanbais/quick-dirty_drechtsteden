@@ -38,12 +38,14 @@ class InputManager:
             dataset: DataFrame = dataset_reader(path=os.path.join(INPUT_FOLDER_PATH, file), file_extention='xlsx')
             read_result = read_result.add(dataset)
             handled_input.append(file)
+        print("handled files:", handled_input)
         self.update_reference_handled_input(handled_input)
 
     def get_prev_handled_input_from_ref(self) -> List[str]:
         json_data: dict = read_json(file_path=os.path.join(REFERENCE_FOLDER_PATH, HANDLED_INPUT_FILENAME))
-        return json_data['handled_input_files']
+        handled_input_files: list = [] if json_data['handled_input_files'] is None else json_data['handled_input_files']
+        return handled_input_files
     
     def update_reference_handled_input(self, new_data: List[str]) -> None:
-        json_object: dict = {"handled_input_files": self.prev_handled_files.append(new_data)}
+        json_object: dict = {"handled_input_files": [*new_data, *self.prev_handled_files]}
         write_to_json(json_object, file_path=os.path.join(REFERENCE_FOLDER_PATH, HANDLED_INPUT_FILENAME))
