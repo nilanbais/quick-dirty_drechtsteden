@@ -27,13 +27,15 @@ class InputManager:
 
     def __init__(self) -> None:
         self.prev_handled_files: List[str] = self.get_prev_handled_input_from_ref()
-        self.input_queue: list = [file for file in os.listdir(INPUT_FOLDER_PATH) if file not in self.prev_handled_files]
+        self.input_queue: list = [file for file in os.listdir(INPUT_FOLDER_PATH) if file not in self.prev_handled_files and file != '.gitkeep']
 
     def get_input_data(self) -> DataFrame:
         read_result = DataFrame()
         handled_input: list = []
+        print("input queue:", self.input_queue)
         for file in self.input_queue:
-            dataset: DataFrame = dataset_reader(path=os.path.join(INPUT_FOLDER_PATH, file))
+            print('file:', file)
+            dataset: DataFrame = dataset_reader(path=os.path.join(INPUT_FOLDER_PATH, file), file_extention='xlsx')
             read_result = read_result.add(dataset)
             handled_input.append(file)
         self.update_reference_handled_input(handled_input)

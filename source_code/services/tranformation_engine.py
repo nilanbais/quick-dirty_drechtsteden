@@ -9,6 +9,7 @@ stappen die doorlopen worden:
 from pandas import DataFrame
 
 from source_code.services.input_manager import InputManager
+from source_code.services.output_manager import OutputManager
 
 
 class TransformationEngine:
@@ -17,12 +18,19 @@ class TransformationEngine:
         pass
 
     def run_transformations(self) -> None:
-        self.tranformation_input = self.get_transformation_input()
+        transformation_input: DataFrame = self.get_transformation_input()
         # Uitvoeren van de transformaties/aggregaties
-        # daarna: geaggregeerde data wegschrijven
+        self.transformation_result: DataFrame = transformation_input
 
     @staticmethod
     def get_transformation_input() -> DataFrame:
         input_manager = InputManager()
         transformation_input: DataFrame = input_manager.get_input_data()
         return transformation_input
+    
+    @staticmethod
+    def store_transformation_dataset(dataset: DataFrame) -> None:
+        output_manager = OutputManager()
+        output_manager.add(dataset)
+        output_manager.store_dataset()
+        
