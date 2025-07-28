@@ -7,11 +7,6 @@ from datetime import timedelta
 from pandas import DataFrame
 
 
-def file_extention_from_path(path: str) -> str:
-    file_extention = path.split(".")[-1]
-    return file_extention
-
-
 def get_avg_time(dataset: DataFrame, columns: List[str]) -> timedelta:
     """
     
