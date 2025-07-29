@@ -19,6 +19,7 @@ class TransformationEngine:
 
     def run_transformations(self) -> None:
         transformation_input: DataFrame = self.get_transformation_input()
+        print("transformation input:", transformation_input)
         # Uitvoeren van de transformaties/aggregaties
         self.transformation_result: DataFrame = transformation_input
 
