@@ -10,6 +10,7 @@ from pandas import DataFrame
 
 from source_code.services.input_manager import InputManager
 from source_code.services.output_manager import OutputManager
+from source_code.services.transformation_manager import TransformationManager
 
 
 class TransformationEngine:
@@ -21,13 +22,15 @@ class TransformationEngine:
         transformation_input: DataFrame = self.get_transformation_input(update_handled_files_flag=True)
         print("transformation input:", transformation_input)
         # Uitvoeren van de transformaties/aggregaties
-        self.transformation_result: DataFrame = transformation_input
+        transformed_data: DataFrame = self.execute_transformations(transformation_input)
+        self.transformation_result: DataFrame = transformed_data
 
     def testrun_transformations(self) -> None:
         transformation_input: DataFrame = self.get_transformation_input(update_handled_files_flag=False)
         print("transformation input:", transformation_input)
         # Uitvoeren van de transformaties/aggregaties
-        self.transformation_result: DataFrame = transformation_input
+        transformed_data: DataFrame = self.execute_transformations(transformation_input)
+        self.transformation_result: DataFrame = transformed_data
 
     @staticmethod
     def get_transformation_input(update_handled_files_flag: bool) -> DataFrame:
@@ -35,6 +38,12 @@ class TransformationEngine:
         transformation_input: DataFrame = input_manager.get_input_data(update_handled_files_flag)
         return transformation_input
     
+    @staticmethod
+    def execute_transformations(dataset: DataFrame) -> DataFrame:
+        transformation_manager = TransformationManager()
+        transformed_dataset: DataFrame = transformation_manager.aggregate_data(dataset)
+        return transformed_dataset
+
     @staticmethod
     def store_transformation_dataset(dataset: DataFrame) -> None:
         output_manager = OutputManager()
