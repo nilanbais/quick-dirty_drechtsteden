@@ -35,7 +35,7 @@ class InputManager:
         self.prev_handled_files: List[str] = self.get_prev_handled_input_from_ref()
         self.input_queue: list = [file for file in os.listdir(INPUT_FOLDER_PATH) if file not in self.prev_handled_files and file != '.gitkeep']
 
-    def get_input_data(self) -> DataFrame:
+    def get_input_data(self, update_handled_files: bool = True) -> DataFrame:
         gathered_input_data = DataFrame(columns=TransformationInputInterface.columns)
         handled_input: list = []
         
@@ -49,7 +49,9 @@ class InputManager:
             gathered_input_data = pd.concat([gathered_input_data, clean_dataset], ignore_index=True)
             handled_input.append(file)
 
-        self.update_reference_handled_input(handled_input)
+        if update_handled_files:
+            self.update_reference_handled_input(handled_input)
+            
         return gathered_input_data
 
     def get_prev_handled_input_from_ref(self) -> List[str]:

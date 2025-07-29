@@ -49,7 +49,7 @@ class TransformationInputInterface:
 class ReportDatasetInterface:
     columns: List[str] = [
         "Datum",        	
-        "Gemiddelde Antwoord Snelheid,"
+        "Gemiddelde Antwoord Snelheid",
         "Gemiddelde Annuleer-tijd",
         "Aangeboden",
         "ACD-Oproepen",

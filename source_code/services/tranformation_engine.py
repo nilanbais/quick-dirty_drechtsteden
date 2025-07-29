@@ -18,15 +18,21 @@ class TransformationEngine:
         pass
 
     def run_transformations(self) -> None:
-        transformation_input: DataFrame = self.get_transformation_input()
+        transformation_input: DataFrame = self.get_transformation_input(update_handled_files_flag=True)
+        print("transformation input:", transformation_input)
+        # Uitvoeren van de transformaties/aggregaties
+        self.transformation_result: DataFrame = transformation_input
+
+    def testrun_transformations(self) -> None:
+        transformation_input: DataFrame = self.get_transformation_input(update_handled_files_flag=False)
         print("transformation input:", transformation_input)
         # Uitvoeren van de transformaties/aggregaties
         self.transformation_result: DataFrame = transformation_input
 
     @staticmethod
-    def get_transformation_input() -> DataFrame:
+    def get_transformation_input(update_handled_files_flag: bool) -> DataFrame:
         input_manager = InputManager()
-        transformation_input: DataFrame = input_manager.get_input_data()
+        transformation_input: DataFrame = input_manager.get_input_data(update_handled_files_flag)
         return transformation_input
     
     @staticmethod
