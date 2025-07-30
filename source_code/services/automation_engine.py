@@ -15,7 +15,7 @@ from source_code.services.transformation_manager import TransformationManager
 
 class AutomationEngine:
 
-    def __init__(self, output_file_name: str = 'rapportage_dataset.csv'):
+    def __init__(self, output_file_name: str):
         self.output_file_name: str = output_file_name
 
     def run_transformations(self) -> None:
