@@ -15,8 +15,8 @@ from source_code.services.transformation_manager import TransformationManager
 
 class AutomationEngine:
 
-    def __init__(self):
-        pass
+    def __init__(self, output_file_name: str = 'rapportage_dataset.csv'):
+        self.output_file_name: str = output_file_name
 
     def run_transformations(self) -> None:
         transformation_input: DataFrame = self.get_transformation_input(update_handled_files_flag=True)
@@ -44,9 +44,8 @@ class AutomationEngine:
         transformed_dataset: DataFrame = transformation_manager.aggregate_data(dataset)
         return transformed_dataset
 
-    @staticmethod
-    def store_transformation_dataset(dataset: DataFrame) -> None:
-        output_manager = OutputManager()
+    def store_transformation_dataset(self, dataset: DataFrame) -> None:
+        output_manager = OutputManager(self.output_file_name)
         output_manager.add(dataset)
         output_manager.store_dataset()
         

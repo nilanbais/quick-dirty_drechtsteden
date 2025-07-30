@@ -22,9 +22,10 @@ OUTPUT_FOLDER_PATH: str = os.getenv("OUTPUT_FOLDER_PATH")
 
 class OutputManager:
 
-    stored_dataset_path: str = os.path.join(OUTPUT_FOLDER_PATH, 'rapportage_dataset.csv')
 
-    def __init__(self) -> None:
+
+    def __init__(self, output_file_name: str) -> None:
+        self.stored_dataset_path: str = os.path.join(OUTPUT_FOLDER_PATH, output_file_name)
         self.dataset: DataFrame = self.load_stored_dataset()
 
     def add(self, new_data: DataFrame) -> None:
