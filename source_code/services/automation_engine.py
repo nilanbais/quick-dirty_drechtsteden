@@ -13,7 +13,7 @@ from source_code.services.output_manager import OutputManager
 from source_code.services.transformation_manager import TransformationManager
 
 
-class TransformationEngine:
+class AutomationEngine:
 
     def __init__(self):
         pass
