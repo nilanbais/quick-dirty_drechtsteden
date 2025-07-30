@@ -10,7 +10,7 @@ load_dotenv()
 
 
 def test_transformation_engine() -> None:
-    transformation_engine = AutomationEngine()
+    transformation_engine = AutomationEngine(output_file_name='rapportage_dataset.csv')
     transformation_engine.testrun_transformations()
     print("transormation result", transformation_engine.transformation_result)
     assert transformation_engine.transformation_result is not None
