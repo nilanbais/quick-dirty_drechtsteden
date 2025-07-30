@@ -44,7 +44,7 @@ class TransformationManager:
 
         # Berekende waarden voor overzicht apart
         binnen_service_drempelwaarde: timedelta = timedelta(seconds=20)
-        temp_df: DataFrame = pre_filtered_dataset['System', 'Queue', 'Ring'].copy()
+        temp_df: DataFrame = pre_filtered_dataset[pre_filtered_dataset['Call Disposition'] == 'Answered']['System', 'Queue', 'Ring'].copy()
         temp_df['row_sum'] = temp_df.sum(axis='columns')
         opgenomen_binnen_drempelwaarde: DataFrame = temp_df[temp_df['row_sum'] < binnen_service_drempelwaarde]
 
