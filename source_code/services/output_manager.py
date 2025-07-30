@@ -22,8 +22,6 @@ OUTPUT_FOLDER_PATH: str = os.getenv("OUTPUT_FOLDER_PATH")
 
 class OutputManager:
 
-
-
     def __init__(self, output_file_name: str) -> None:
         self.stored_dataset_path: str = os.path.join(OUTPUT_FOLDER_PATH, output_file_name)
         self.dataset: DataFrame = self.load_stored_dataset()
@@ -34,7 +32,7 @@ class OutputManager:
     def store_dataset(self, mode: str = 'overwrite') -> None:
         match mode:
             case 'overwrite':
-                self.dataset.to_csv(self.stored_dataset_path, index=False, encoding='utf-8')
+                self.dataset.to_csv(self.stored_dataset_path, index=False, encoding='utf-8', sep=';')
 
     def load_stored_dataset(self) -> DataFrame:
         if os.path.exists(self.stored_dataset_path):

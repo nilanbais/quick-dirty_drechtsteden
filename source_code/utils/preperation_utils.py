@@ -54,3 +54,4 @@ def timestring_to_seconds(dataset: DataFrame, columns: List[str]) -> DataFrame:
         dataset[col_name] = dataset[col_name].map(lambda timestring: timedelta_from_string(timestring))
 
     return dataset
+

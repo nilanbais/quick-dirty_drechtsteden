@@ -12,7 +12,7 @@ def dataset_reader(path: str, file_extention: str) -> DataFrame:
         case 'xlsx':
             dataset: DataFrame = pd.read_excel(path, header=1)
         case 'csv' | '.csv':
-            dataset: DataFrame = pd.read_csv(path, header=0)
+            dataset: DataFrame = pd.read_csv(path, header=0, sep=';')
         case _:
             raise ValueError("No suitable file_extention given. Choose 'csv', 'xlsx'.")
     return dataset
