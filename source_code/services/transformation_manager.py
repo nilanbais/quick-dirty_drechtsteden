@@ -2,6 +2,7 @@
 File met objecten verantwoordelijk voor de transformatie gerelateerde operaties.
 """
 import os
+from datetime import timedelta
 
 import pandas as pd
 
@@ -41,6 +42,13 @@ class TransformationManager:
         """
         pre_filtered_dataset: DataFrame = dataset_day
 
+        # Berekende waarden voor overzicht apart
+        binnen_service_drempelwaarde: timedelta = timedelta(seconds=20)
+        temp_df: DataFrame = pre_filtered_dataset['System', 'Queue', 'Ring'].copy()
+        temp_df['row_sum'] = temp_df.sum(axis='columns')
+        opgenomen_binnen_drempelwaarde: DataFrame = temp_df[temp_df['row_sum'] < binnen_service_drempelwaarde]
+
+
         return Series({
             "Aangeboden": len(pre_filtered_dataset),
             "ACD-Oproepen": len(pre_filtered_dataset[pre_filtered_dataset['Call Disposition'] == 'Answered']),
@@ -50,11 +58,11 @@ class TransformationManager:
             "Gemiddelde ACD-tijd": get_avg_time(pre_filtered_dataset[pre_filtered_dataset['Call Disposition'] == 'Answered'], columns=['Duration']),
             "Gemiddelde ACW-tijd": get_avg_time(pre_filtered_dataset, columns=['ACW']),
             "Maximale Vertraging": get_max_time(pre_filtered_dataset, columns=['System', 'Queue', 'Ring']),
-            "Maximale In-wachtrij": 1,
-            "Extensie Uit-gesprek": 1,
-            "Gemiddelde Extensie Uit-gesprek": 1,
+            "Maximale In-wachtrij": '[berekening toevoegen]',
+            "Extensie Uit-gesprek": '[berekening toevoegen]',
+            "Gemiddelde Extensie Uit-gesprek": '[berekening toevoegen]',
             "ACD-Tijd (%)": (pre_filtered_dataset[pre_filtered_dataset['Call Disposition'] == 'Answered'].filter('Duration', axis=1).sum())/len(pre_filtered_dataset[pre_filtered_dataset['Call Disposition'] == 'Answered']),
             "Beantwoorde Oproepen (%)": (len(pre_filtered_dataset[pre_filtered_dataset['Call Disposition'] == 'Answered'])/len(pre_filtered_dataset))*100,
-            "Binnen Service-Level (%)": 1,
-            "Omgeleid Geen Antwoord": 1
+            "Binnen Service-Level (%)": (opgenomen_binnen_drempelwaarde / len(pre_filtered_dataset)) * 100,
+            "Omgeleid Geen Antwoord": '[berekening toevoegen]'
         })
