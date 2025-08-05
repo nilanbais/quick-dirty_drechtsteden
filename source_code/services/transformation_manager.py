@@ -33,9 +33,10 @@ class TransformationManager:
         """
         dataset['Datum'] = pd.to_datetime(dataset['Start']).dt.date
         print("aggregate input columns:", dataset.columns)
-        aggregated_dataset: DataFrame = dataset.groupby('Datum').apply(self.aggregate_daily_metrics)
+        aggregated_dataset: DataFrame = dataset.groupby('Datum').apply(self.aggregate_daily_metrics).reset_index(drop=True)
         print("aggregated columns:", aggregated_dataset.columns)
-        result_dataset: DataFrame = self.agg_result_cleanup(aggregated_dataset)
+        # result_dataset: DataFrame = self.agg_result_cleanup(aggregated_dataset)
+        result_dataset: DataFrame = aggregated_dataset
         print("result columns:", result_dataset.columns)
         return result_dataset
 
@@ -45,9 +46,6 @@ class TransformationManager:
         Output: pd.Series (record) met de geaggregeerde metrics van de input dag.
         """
         pre_filtered_dataset: DataFrame = dataset_day
-
-        # Berekende waarden voor overzicht apart
-
 
         # presentatie van de datapunten wordt gedaan in de methods voor het extraheren/berekenen van de data
         return Series({
@@ -72,6 +70,7 @@ class TransformationManager:
     @staticmethod
     def agg_result_cleanup(dataset: DataFrame) -> DataFrame:
         # dataset.reset_index(drop=True, inplace=True)
+
         dataset['Datum'] = dataset['Datum Call']
         clean_dataset = dataset.drop('Datum Call', axis=1)
 
@@ -104,6 +103,9 @@ class TransformationManager:
     @staticmethod
     def avg_cancel_time(dataset: DataFrame) -> str:
         avg_time: timedelta = get_avg_time(dataset[dataset['Call Disposition'] == 'Abandoned'], columns='Duration')
+        if not isinstance(avg_time, timedelta):
+            return "00:00:00"
+        
         timedelta_str: str = strftimedelta(avg_time)
         return timedelta_str
 
