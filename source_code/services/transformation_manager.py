@@ -32,12 +32,9 @@ class TransformationManager:
         Hoofdfunctie voor het uitvoeren van de verschillende aggregaties.
         """
         dataset['Datum'] = pd.to_datetime(dataset['Start']).dt.date
-        print("aggregate input columns:", dataset.columns)
         aggregated_dataset: DataFrame = dataset.groupby('Datum').apply(self.aggregate_daily_metrics).reset_index(drop=True)
-        print("aggregated columns:", aggregated_dataset.columns)
         # result_dataset: DataFrame = self.agg_result_cleanup(aggregated_dataset)
         result_dataset: DataFrame = aggregated_dataset
-        print("result columns:", result_dataset.columns)
         return result_dataset
 
     def aggregate_daily_metrics(self, dataset_day: DataFrame) -> Series:
@@ -129,10 +126,11 @@ class TransformationManager:
     
     @staticmethod
     def acd_time_percentage(dataset: DataFrame) -> float:
-        total_acd_time = dataset[dataset['Call Disposition'] == 'Answered'][['Duration']].sum()  ## add dtype
+        total_acd_time: timedelta = dataset['Duration'][dataset['Call Disposition'] == 'Answered'].sum()
         finished_calls_count: int = len(dataset[dataset['Call Disposition'] == 'Answered'])
         acd_percentage: float = total_acd_time / finished_calls_count
-        return acd_percentage
+        timedelta_str: str = strftimedelta(acd_percentage)
+        return timedelta_str
     
     @staticmethod
     def answered_calls_percentage(dataset: DataFrame) -> float:
