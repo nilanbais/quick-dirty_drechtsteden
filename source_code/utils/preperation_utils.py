@@ -55,3 +55,13 @@ def timestring_to_seconds(dataset: DataFrame, columns: List[str]) -> DataFrame:
 
     return dataset
 
+
+def strftimedelta(timedelta_object: timedelta) -> str:
+    """
+    Returns a string representing the hours:minutes:seconds of the given timedelta object.
+    """
+    total_seconds: int = int(timedelta_object.total_seconds())
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    timedelta_str: str = f"{hours:02}:{minutes:02}:{seconds:02}"
+    return timedelta_str

@@ -2,7 +2,7 @@
 File met objecten verantwoordelijk voor de transformatie gerelateerde operaties.
 """
 import os
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pandas as pd
 
@@ -16,6 +16,7 @@ from source_code.utils.aggregation_utils import (
     get_avg_time,
     get_max_time
 )
+from source_code.utils.preperation_utils import strftimedelta
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -46,28 +47,25 @@ class TransformationManager:
         pre_filtered_dataset: DataFrame = dataset_day
 
         # Berekende waarden voor overzicht apart
-        binnen_service_drempelwaarde: timedelta = timedelta(seconds=20)
-        temp_df: DataFrame = pre_filtered_dataset[pre_filtered_dataset['Call Disposition'] == 'Answered'][['System', 'Queue', 'Ring']]
-        temp_df['row_sum'] = temp_df.sum(axis=1)
-        opgenomen_binnen_drempelwaarde: DataFrame = temp_df[temp_df['row_sum'] < binnen_service_drempelwaarde]
 
 
+        # presentatie van de datapunten wordt gedaan in de methods voor het extraheren/berekenen van de data
         return Series({
-            "Datum Call": pre_filtered_dataset['Datum'].iloc[0],
-            "Aangeboden": len(pre_filtered_dataset),
-            "ACD-Oproepen": len(pre_filtered_dataset[pre_filtered_dataset['Call Disposition'] == 'Answered']),
-            "Geannuleerde Oproepen": len(pre_filtered_dataset[pre_filtered_dataset['Call Disposition'] == 'Abandoned']),
-            "Gemiddelde Antwoord Snelheid": get_avg_time(pre_filtered_dataset, columns=['System', 'Queue', 'Ring']),
-            "Gemiddelde Annuleer-tijd": get_avg_time(pre_filtered_dataset[pre_filtered_dataset['Call Disposition'] == 'Abandoned'], columns='Duration'),
-            "Gemiddelde ACD-tijd": get_avg_time(pre_filtered_dataset[pre_filtered_dataset['Call Disposition'] == 'Answered'], columns=['Duration']),
-            "Gemiddelde ACW-tijd": get_avg_time(pre_filtered_dataset, columns=['ACW']),
-            "Maximale Vertraging": get_max_time(pre_filtered_dataset, columns=['System', 'Queue', 'Ring']),
+            "Datum Call": self.get_date_value(pre_filtered_dataset['Datum']),
+            "Aangeboden": self.calls_offered(pre_filtered_dataset),
+            "ACD-Oproepen": self.acd_calls(pre_filtered_dataset),
+            "Geannuleerde Oproepen": self.calls_canceled(pre_filtered_dataset),
+            "Gemiddelde Antwoord Snelheid": self.avg_answer_time(pre_filtered_dataset),
+            "Gemiddelde Annuleer-tijd": self.avg_cancel_time(pre_filtered_dataset),
+            "Gemiddelde ACD-tijd": self.avg_acd_time(pre_filtered_dataset),
+            "Gemiddelde ACW-tijd": self.avg_acw_time(pre_filtered_dataset),
+            "Maximale Vertraging": self.max_call_delay(pre_filtered_dataset),
             "Maximale In-wachtrij": '[berekening toevoegen]',
             "Extensie Uit-gesprek": '[berekening toevoegen]',
             "Gemiddelde Extensie Uit-gesprek": '[berekening toevoegen]',
-            "ACD-Tijd (%)": (pre_filtered_dataset[pre_filtered_dataset['Call Disposition'] == 'Answered'][['Duration']].sum())/len(pre_filtered_dataset[pre_filtered_dataset['Call Disposition'] == 'Answered']),
-            "Beantwoorde Oproepen (%)": (len(pre_filtered_dataset[pre_filtered_dataset['Call Disposition'] == 'Answered'])/len(pre_filtered_dataset))*100,
-            "Binnen Service-Level (%)": (opgenomen_binnen_drempelwaarde / len(pre_filtered_dataset)) * 100,
+            "ACD-Tijd (%)": self.acd_time_percentage(pre_filtered_dataset),
+            "Beantwoorde Oproepen (%)": self.answered_calls_percentage(pre_filtered_dataset),
+            "Binnen Service-Level (%)": self.within_service_percentage(pre_filtered_dataset),
             "Omgeleid Geen Antwoord": '[berekening toevoegen]'
         })
     
@@ -78,3 +76,75 @@ class TransformationManager:
         clean_dataset = dataset.drop('Datum Call', axis=1)
 
         return clean_dataset
+
+    @staticmethod
+    def get_date_value(dataset_column: Series) -> datetime:
+        return dataset_column.iloc[0]
+    
+    @staticmethod
+    def calls_offered(dataset: DataFrame) -> DataFrame:
+        return len(dataset)
+
+    @staticmethod
+    def acd_calls(dataset: DataFrame) -> int:
+        acd_calls_df: DataFrame = dataset[dataset['Call Disposition'] == 'Answered']
+        return len(acd_calls_df)
+    
+    @staticmethod
+    def calls_canceled(dataset: DataFrame) -> int:
+        canceled_calls_df: DataFrame = dataset[dataset['Call Disposition'] == 'Abandoned']
+        return len(canceled_calls_df)
+    
+    @staticmethod
+    def avg_answer_time(dataset: DataFrame) -> str:
+        avg_time: timedelta = get_avg_time(dataset, columns=['System', 'Queue', 'Ring'])
+        timedelta_str: str = strftimedelta(avg_time)
+        return timedelta_str
+    
+    @staticmethod
+    def avg_cancel_time(dataset: DataFrame) -> str:
+        avg_time: timedelta = get_avg_time(dataset[dataset['Call Disposition'] == 'Abandoned'], columns='Duration')
+        timedelta_str: str = strftimedelta(avg_time)
+        return timedelta_str
+
+    @staticmethod
+    def avg_acd_time(dataset: DataFrame) -> str:
+        avg_time: timedelta = get_avg_time(dataset[dataset['Call Disposition'] == 'Answered'], columns=['Duration'])
+        timedelta_str: str = strftimedelta(avg_time)
+        return timedelta_str
+    
+    @staticmethod
+    def avg_acw_time(dataset: DataFrame) -> str:
+        avg_time: timedelta = get_avg_time(dataset, columns=['ACW'])
+        timedelta_str: str = strftimedelta(avg_time)
+        return timedelta_str
+    
+    @staticmethod
+    def max_call_delay(dataset: DataFrame) -> str:
+        max_time: timedelta = get_max_time(dataset, columns=['System', 'Queue', 'Ring'])
+        timedelta_str: str = strftimedelta(max_time)
+        return timedelta_str
+    
+    @staticmethod
+    def acd_time_percentage(dataset: DataFrame) -> float:
+        total_acd_time = dataset[dataset['Call Disposition'] == 'Answered'][['Duration']].sum()  ## add dtype
+        finished_calls_count: int = len(dataset[dataset['Call Disposition'] == 'Answered'])
+        acd_percentage: float = total_acd_time / finished_calls_count
+        return acd_percentage
+    
+    @staticmethod
+    def answered_calls_percentage(dataset: DataFrame) -> float:
+        answered_calls_count: int = len(dataset[dataset['Call Disposition'] == 'Answered'])
+        total_calls_count: int = len(dataset)
+        answered_percentage: float = answered_calls_count / total_calls_count
+        return answered_percentage
+    
+    @staticmethod
+    def within_service_percentage(dataset: DataFrame) -> float:
+        binnen_service_drempelwaarde: timedelta = timedelta(seconds=20)
+        temp_df: DataFrame = dataset[dataset['Call Disposition'] == 'Answered'][['System', 'Queue', 'Ring']]
+        temp_df['row_sum'] = temp_df.sum(axis=1)
+        opgenomen_binnen_drempelwaarde_df: DataFrame = temp_df[temp_df['row_sum'] < binnen_service_drempelwaarde]
+        opgenomen_binnen_drempelwaarde_count: int = len(opgenomen_binnen_drempelwaarde_df)
+        total_calls_count: int = len(dataset)
+        return opgenomen_binnen_drempelwaarde_count / total_calls_count
