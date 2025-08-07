@@ -10,7 +10,7 @@ from pandas import DataFrame
 def dataset_reader(path: str, file_extention: str) -> DataFrame:
     match file_extention:
         case 'xlsx':
-            dataset: DataFrame = pd.read_excel(path, header=1)
+            dataset: DataFrame = pd.read_excel(path, header=0)
         case 'csv' | '.csv':
             dataset: DataFrame = pd.read_csv(path, header=0, sep=';')
         case _:

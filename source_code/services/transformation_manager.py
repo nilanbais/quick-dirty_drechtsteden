@@ -50,11 +50,11 @@ class TransformationManager:
             "Aangeboden": self.calls_offered(pre_filtered_dataset),
             "ACD-Oproepen": self.acd_calls(pre_filtered_dataset),
             "Geannuleerde Oproepen": self.calls_canceled(pre_filtered_dataset),
-            "Gemiddelde Antwoord Snelheid": self.avg_answer_time(pre_filtered_dataset),
-            "Gemiddelde Annuleer-tijd": self.avg_cancel_time(pre_filtered_dataset),
-            "Gemiddelde ACD-tijd": self.avg_acd_time(pre_filtered_dataset),
-            "Gemiddelde ACW-tijd": self.avg_acw_time(pre_filtered_dataset),
-            "Maximale Vertraging": self.max_call_delay(pre_filtered_dataset),
+            "Gemiddelde Antwoord Snelheid (sec)": self.avg_answer_time(pre_filtered_dataset),
+            "Gemiddelde Annuleer-tijd (sec)": self.avg_cancel_time(pre_filtered_dataset),
+            "Gemiddelde ACD-tijd (sec)": self.avg_acd_time(pre_filtered_dataset),
+            "Gemiddelde ACW-tijd (sec)": self.avg_acw_time(pre_filtered_dataset),
+            "Maximale Vertraging (sec)": self.max_call_delay(pre_filtered_dataset),
             "Maximale In-wachtrij": '[berekening toevoegen]',
             "Extensie Uit-gesprek": '[berekening toevoegen]',
             "Gemiddelde Extensie Uit-gesprek": '[berekening toevoegen]',
@@ -94,43 +94,36 @@ class TransformationManager:
     @staticmethod
     def avg_answer_time(dataset: DataFrame) -> str:
         avg_time: timedelta = get_avg_time(dataset, columns=['System', 'Queue', 'Ring'])
-        timedelta_str: str = strftimedelta(avg_time)
-        return timedelta_str
+        return avg_time.total_seconds()
     
     @staticmethod
     def avg_cancel_time(dataset: DataFrame) -> str:
         avg_time: timedelta = get_avg_time(dataset[dataset['Call Disposition'] == 'Abandoned'], columns='Duration')
         if not isinstance(avg_time, timedelta):
-            return "00:00:00"
-        
-        timedelta_str: str = strftimedelta(avg_time)
-        return timedelta_str
+            return 0
+        return avg_time.total_seconds()
 
     @staticmethod
     def avg_acd_time(dataset: DataFrame) -> str:
         avg_time: timedelta = get_avg_time(dataset[dataset['Call Disposition'] == 'Answered'], columns=['Duration'])
-        timedelta_str: str = strftimedelta(avg_time)
-        return timedelta_str
+        return avg_time.total_seconds()
     
     @staticmethod
     def avg_acw_time(dataset: DataFrame) -> str:
         avg_time: timedelta = get_avg_time(dataset, columns=['ACW'])
-        timedelta_str: str = strftimedelta(avg_time)
-        return timedelta_str
+        return avg_time.total_seconds()
     
     @staticmethod
     def max_call_delay(dataset: DataFrame) -> str:
         max_time: timedelta = get_max_time(dataset, columns=['System', 'Queue', 'Ring'])
-        timedelta_str: str = strftimedelta(max_time)
-        return timedelta_str
+        return max_time.total_seconds()
     
     @staticmethod
     def acd_time_percentage(dataset: DataFrame) -> float:
         total_acd_time: timedelta = dataset['Duration'][dataset['Call Disposition'] == 'Answered'].sum()
         finished_calls_count: int = len(dataset[dataset['Call Disposition'] == 'Answered'])
-        acd_percentage: float = total_acd_time / finished_calls_count
-        timedelta_str: str = strftimedelta(acd_percentage)
-        return timedelta_str
+        acd_percentage: float = total_acd_time.total_seconds() / finished_calls_count
+        return acd_percentage
     
     @staticmethod
     def answered_calls_percentage(dataset: DataFrame) -> float:

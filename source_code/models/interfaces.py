@@ -48,14 +48,14 @@ class TransformationInputInterface:
 
 class ReportDatasetInterface:
     columns: List[str] = [
-        "Gemiddelde Antwoord Snelheid",
-        "Gemiddelde Annuleer-tijd",
+        "Gemiddelde Antwoord Snelheid (sec)",
+        "Gemiddelde Annuleer-tijd (sec)",
         "Aangeboden",
         "ACD-Oproepen",
-        "Gemiddelde ACD-tijd",
-        "Gemiddelde ACW-tijd",
+        "Gemiddelde ACD-tijd (sec)",
+        "Gemiddelde ACW-tijd (sec)",
         "Geannuleerde Oproepen",
-        "Maximale Vertraging",
+        "Maximale Vertraging (sec)",
         "Maximale In-wachtrij",
         "Extensie Uit-gesprek",
         "Gemiddelde Extensie Uit-gesprek",
