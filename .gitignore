@@ -3,6 +3,7 @@ venv/
 .env
 input/*
 rapportage_dataset/*
+*pbix
 
 # do not ignore the following files
 !input/.gitkeep
