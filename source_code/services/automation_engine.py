@@ -19,23 +19,23 @@ class AutomationEngine:
         self.output_file_name: str = output_file_name
 
     def run_transformations(self) -> None:
-        transformation_input: DataFrame = self.get_transformation_input(update_handled_files_flag=True)
+        transformation_input: DataFrame = self.get_transformation_input()
         print("transformation input:", transformation_input)
         # Uitvoeren van de transformaties/aggregaties
         transformed_data: DataFrame = self.execute_transformations(transformation_input)
         self.transformation_result: DataFrame = transformed_data
 
     def testrun_transformations(self) -> None:
-        transformation_input: DataFrame = self.get_transformation_input(update_handled_files_flag=False)
+        transformation_input: DataFrame = self.get_transformation_input()
         print("transformation input:", transformation_input)
         # Uitvoeren van de transformaties/aggregaties
         transformed_data: DataFrame = self.execute_transformations(transformation_input)
         self.transformation_result: DataFrame = transformed_data
 
     @staticmethod
-    def get_transformation_input(update_handled_files_flag: bool) -> DataFrame:
+    def get_transformation_input() -> DataFrame:
         input_manager = InputManager()
-        transformation_input: DataFrame = input_manager.get_input_data(update_handled_files_flag)
+        transformation_input: DataFrame = input_manager.get_input_data()
         return transformation_input
     
     @staticmethod

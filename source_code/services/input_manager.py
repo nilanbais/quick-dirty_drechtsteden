@@ -35,9 +35,8 @@ class InputManager:
         self.prev_handled_files: List[str] = self.get_prev_handled_input_from_ref()
         self.input_queue: list = [file for file in os.listdir(INPUT_FOLDER_PATH) if file not in self.prev_handled_files and file != '.gitkeep']
 
-    def get_input_data(self, update_handled_files: bool = True) -> DataFrame:
+    def get_input_data(self) -> DataFrame:
         gathered_input_data = DataFrame(columns=TransformationInputInterface.columns)
-        handled_input: list = []
         
         for file in self.input_queue:
             raw_dataset: DataFrame = dataset_reader(path=os.path.join(INPUT_FOLDER_PATH, file), file_extention='xlsx')
@@ -47,10 +46,6 @@ class InputManager:
             See: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
             """
             gathered_input_data = pd.concat([gathered_input_data, clean_dataset], ignore_index=True)
-            handled_input.append(file)
-
-        if update_handled_files:
-            self.update_reference_handled_input(handled_input)
             
         return gathered_input_data
 
@@ -58,10 +53,6 @@ class InputManager:
         json_data: dict = read_json(file_path=os.path.join(REFERENCE_FOLDER_PATH, HANDLED_INPUT_FILENAME))
         handled_input_files: list = [] if json_data['handled_input_files'] is None else json_data['handled_input_files']
         return handled_input_files
-    
-    def update_reference_handled_input(self, new_data: List[str]) -> None:
-        json_object: dict = {"handled_input_files": [*new_data, *self.prev_handled_files]}
-        write_to_json(json_object, file_path=os.path.join(REFERENCE_FOLDER_PATH, HANDLED_INPUT_FILENAME))
 
     @staticmethod
     def clean_input_dataset(dataset: DataFrame) -> DataFrame:
