@@ -47,5 +47,5 @@ class AutomationEngine:
     def store_transformation_dataset(self, dataset: DataFrame) -> None:
         output_manager = OutputManager(self.output_file_name)
         output_manager.add(dataset)
-        output_manager.store_dataset()
+        output_manager.store_dataset(mode='overwrite')
         

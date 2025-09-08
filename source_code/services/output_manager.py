@@ -19,8 +19,23 @@ load_dotenv()
 OUTPUT_FOLDER_PATH: str = os.getenv("OUTPUT_FOLDER_PATH")
 
 
-
 class OutputManager:
+
+    def __init__(self, output_file_name: str) -> None:
+        self.stored_dataset_path: str = os.path.join(OUTPUT_FOLDER_PATH, output_file_name)
+        self.dataset = DataFrame(columns=ReportDatasetInterface.columns)
+
+    def add(self, new_data: DataFrame) -> None:
+        self.dataset = pd.concat([self.dataset, new_data], ignore_index=True)
+
+    def store_dataset(self, mode: str) -> None:
+        match mode.lower():
+            case 'overwrite':
+                self.dataset.to_csv(self.stored_dataset_path, index=False, encoding='utf-8', sep=';')
+
+
+
+class DEPRICATEDOutputManager:
 
     def __init__(self, output_file_name: str) -> None:
         self.stored_dataset_path: str = os.path.join(OUTPUT_FOLDER_PATH, output_file_name)
@@ -30,7 +45,7 @@ class OutputManager:
         self.dataset = pd.concat([self.dataset, new_data], ignore_index=True)
 
     def store_dataset(self, mode: str = 'overwrite') -> None:
-        match mode:
+        match mode.lower():
             case 'overwrite':
                 self.dataset.to_csv(self.stored_dataset_path, index=False, encoding='utf-8', sep=';')
 

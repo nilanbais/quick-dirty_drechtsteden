@@ -10,4 +10,4 @@ load_dotenv()
 
 def test_previous_handles_sets():
     manager_object = InputManager()
-    assert manager_object.prev_handled_files != None
+    assert manager_object != None

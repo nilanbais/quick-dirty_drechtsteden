@@ -32,8 +32,7 @@ HANDLED_INPUT_FILENAME: str = os.getenv("HANDLED_INPUT_FILENAME")
 class InputManager:
 
     def __init__(self) -> None:
-        self.prev_handled_files: List[str] = self.get_prev_handled_input_from_ref()
-        self.input_queue: list = [file for file in os.listdir(INPUT_FOLDER_PATH) if file not in self.prev_handled_files and file != '.gitkeep']
+        self.input_queue: list = [file for file in os.listdir(INPUT_FOLDER_PATH) if file != '.gitkeep']
 
     def get_input_data(self) -> DataFrame:
         gathered_input_data = DataFrame(columns=TransformationInputInterface.columns)
@@ -48,11 +47,6 @@ class InputManager:
             gathered_input_data = pd.concat([gathered_input_data, clean_dataset], ignore_index=True)
             
         return gathered_input_data
-
-    def get_prev_handled_input_from_ref(self) -> List[str]:
-        json_data: dict = read_json(file_path=os.path.join(REFERENCE_FOLDER_PATH, HANDLED_INPUT_FILENAME))
-        handled_input_files: list = [] if json_data['handled_input_files'] is None else json_data['handled_input_files']
-        return handled_input_files
 
     @staticmethod
     def clean_input_dataset(dataset: DataFrame) -> DataFrame:
