@@ -12,6 +12,7 @@ set "RELATIVE_PATH_PYTHON_DEPENDENCIES=requirements.txt"
 set "RELATIVE_PATH_SCRIPTS_FOLDER=\scripts"
 set "PYTHON_INSTALLER_RELATIVE_PATH=%RELATIVE_PATH_SCRIPTS_FOLDER%\python_installer.bat"
 set "DEPENDENCY_INSTALLER_RELATIVE_PATH=%RELATIVE_PATH_SCRIPTS_FOLDER%\python_dependency_installer.bat"
+set "SET_ENV_FILE_RELATIVE_PATH=%RELATIVE_PATH_SCRIPTS_FOLDER%\set_env_file.bat"
 set "PYTHON_EXEC=python.exe"
 set "PYTHON_SCRIPT_PATH=scripts\execute_transformation.py"
 
@@ -28,39 +29,52 @@ REM === Controleren of python al geïnstalleerd is op het systeem ===
 :python
 
 if not defined PYTHON_EXE_PATH (
+    echo.
     echo [FOUT] Python is niet geïnstalleerd.
     echo.
     echo [INFO] Start installatie van Python.
     pause
     call %CD%\%PYTHON_INSTALLER_RELATIVE_PATH%
 ) else (
-    echo [SUCCES] Python is al geïnstalleerd op het systeem.
     echo.
+    echo [SUCCES] Python is al geïnstalleerd op het systeem.
 )
 
 REM === Installeer de benodigde python packages ===
-:dependencies 
+:dependencies
+echo.
 echo [INFO] Installeer python packages
 echo requirements file: %RELATIVE_PATH_PYTHON_DEPENDENCIES%
 echo.
 call %CD%\%DEPENDENCY_INSTALLER_RELATIVE_PATH% %CD%\%RELATIVE_PATH_PYTHON_DEPENDENCIES%
 
+REM === Maak het .env bestaand ===
+:py_env
+if exist .env (
+    goto :solution
+) else (
+    echo.
+    echo [INFO] Geen .env bestand gevonden. Aanmaken .env-file...
+    call %CD%\%SET_ENV_FILE_RELATIVE_PATH%
+)
+
 REM === Voer de python code uit ===
 :solution
+echo.
 echo [INFO] Druk op een toets om het script te starten.
 
 pause
 
 echo.
 echo [INFO] Bezig met het uitvoeren van het Python-script. Moment gedult a.u.b.
-echo.
+
 :: py run argument 
 python %PYTHON_SCRIPT_PATH%
 
-echo [INFO] De Python-code is succesvol uitgevoerd.
 echo.
+echo [INFO] De Python-code is succesvol uitgevoerd.
 
 :einde
-echo [INFO] Script afsluiten. 
 echo.
+echo [INFO] Script afsluiten. 
 pause
